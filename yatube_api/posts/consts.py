@@ -1,0 +1,1 @@
+TEXT_CONST = 20
