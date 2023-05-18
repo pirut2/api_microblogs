@@ -11,6 +11,9 @@ class Group(models.Model):
     slug = models.SlugField(max_length=200, unique=True)
     description = models.TextField()
 
+    class Meta:
+        ordering = ['title']
+
     def __str__(self):
         return self.title
 
@@ -29,6 +32,11 @@ class Post(models.Model):
         on_delete=models.SET_NULL,
         related_name='posts'
     )
+
+    class Meta:
+        # pub_date в обратном порядке, как в старых проектах
+        # сделать не получится. Тест на пагинацию не пропустит.
+        ordering = ['pub_date']
 
     def __str__(self):
         return self.text[TEXT_CONST]
@@ -50,6 +58,9 @@ class Comment(models.Model):
         related_name='comments'
     )
 
+    class Meta:
+        ordering = ['-created']
+
 
 class Follow(models.Model):
     user = models.ForeignKey(
@@ -60,3 +71,12 @@ class Follow(models.Model):
         User,
         on_delete=models.CASCADE,
         related_name='following')
+
+    class Meta:
+        ordering = ['following']
+        constraints = [
+            models.UniqueConstraint(
+                fields=['user', 'following'],
+                name='unique_user_following'
+            )
+        ]
